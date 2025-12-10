@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>GolfHub 상품 등록 관리자</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-soft: #111827;
+      --card: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.1);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --danger: #f97373;
+    }
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      color: var(--text);
+    }
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+    aside {
+      width: 260px;
+      background: linear-gradient(180deg, #020617, #020617 40%, #0b1220);
+      border-right: 1px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #4ade80, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      color: #022c22;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+    }
+    .logo-text-main {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .logo-text-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .nav-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .nav-item {
+      font-size: 14px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid transparent;
+    }
+    .nav-item.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    main {
+      flex: 1;
+      padding: 20px 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .page-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .page-title h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    .page-title span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #022c22;
+      font-weight: 600;
+    }
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1.4fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+    @media (max-width: 960px) {
+      aside {
+        display: none;
+      }
+      .layout-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .card {
+      background: radial-gradient(circle at top left, #020617, #020617 38%, #020617);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 16px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+    .card-header span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .pill {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+    }
+    .pill-ai {
+      border-color: rgba(34, 197, 94, 0.4);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px 14px;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .checkbox-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .checkbox-pill input {
+      accent-color: var(--accent);
+    }
+    .market-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      background: rgba(148, 163, 184, 0.15);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="logo">
+      <div class="logo-badge">G</div>
+      <div>
+        <div class="logo-text-main">GolfHub Admin</div>
+        <div class="logo-text-sub">중고 골프채 통합 상품 관리</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-section-title">Dashboard</div>
+      <div class="nav-list">
+        <div class="nav-item active">
+          <span>상품 등록</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="page-title">
+        <h1>중고 골프채 상품 등록</h1>
+        <span>한 번 등록하면 여러 채널에 배포할 수 있도록 설계된 관리 화면 (현재는 DB 저장까지).</span>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-ghost" type="button" onclick="mockFillM4()">예시 데이터</button>
+        <button class="btn btn-primary" type="button" onclick="saveProduct()">상품 저장</button>
+      </div>
+    </header>
+
+    <div class="layout-grid">
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>기본 정보</h2>
+              <span>브랜드 · 모델 · 클럽 종류 등 필수 정보</span>
+            </div>
+            <span class="pill pill-ai">AI 제목 생성 예정</span>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-row">
+              <label for="brand">브랜드</label>
+              <select id="brand">
+                <option value="">선택하세요</option>
+                <option>타이틀리스트</option>
+                <option>테일러메이드</option>
+                <option>핑(PING)</option>
+                <option>미즈노</option>
+                <option>브리지스톤</option>
+                <option>캘러웨이</option>
+                <option>야마하</option>
+                <option>혼마</option>
+                <option>기타</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="model">모델명</label>
+              <input id="model" type="text" placeholder="예: 917 D2, M4, G425 Max" />
+            </div>
+
+            <div class="form-row">
+              <label for="clubType">클럽 유형</label>
+              <select id="clubType">
+                <option value="">선택하세요</option>
+                <option>드라이버</option>
+                <option>페어웨이우드</option>
+                <option>유틸리티</option>
+                <option>아이언세트</option>
+                <option>웨지</option>
+                <option>퍼터</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="condition">상태 등급</label>
+              <select id="condition">
+                <option value="">선택하세요</option>
+                <option>S · 거의 새상품</option>
+                <option>A · 사용감 적음</option>
+                <option>B+ · 보통보다 좋음</option>
+                <option>B · 일반적인 사용감</option>
+                <option>C · 사용감 많음</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid-3" style="margin-top:10px;">
+            <div class="form-row">
+              <label for="loft">로프트(Loft)</label>
+              <input id="loft" type="text" placeholder="예: 9.5, 10.5" />
+            </div>
+            <div class="form-row">
+              <label for="shaft">샤프트</label>
+              <input id="shaft" type="text" placeholder="예: Diamana S, Tour AD IZ" />
+            </div>
+            <div class="form-row">
+              <label for="flex">강도(Flex)</label>
+              <select id="flex">
+                <option value="">선택</option>
+                <option>R</option>
+                <option>S</option>
+                <option>SR</option>
+                <option>X</option>
+                <option>L</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row" style="margin-top:10px;">
+            <label for="title">상품명 (표시용)</label>
+            <input id="title" type="text" placeholder="[B+] 타이틀리스트 917 D2 드라이버 9.5도 S샤프트" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>가격 · 재고</h2>
+              <span>기준 판매가와 재고</span>
+            </div>
+            <span class="pill">AI 시세 참고는 추후 연동</span>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-row">
+              <label for="basePrice">기준 판매가 (원)</label>
+              <input id="basePrice" type="number" min="0" step="1000" placeholder="예: 250000" />
+            </div>
+            <div class="form-row">
+              <label for="minPrice">최저 매입 기준가 (원)</label>
+              <input id="minPrice" type="number" min="0" step="1000" placeholder="예: 180000" />
+            </div>
+            <div class="form-row">
+              <label for="stock">재고 수량</label>
+              <input id="stock" type="number" min="1" step="1" value="1" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>상세 설명</h2>
+              <span>마켓 공통 상세설명 초안</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="description">상품 설명</label>
+            <textarea id="description" placeholder="예: 타구감 / 관용성 / 추천 대상 / 실제 사용감 등을 기입하세요."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>연동 채널 설정</h2>
+              <span>어디까지 내보낼지 선택 (현재는 표시용)</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>출고 채널</label>
+            <div class="checkbox-row">
+              <label class="checkbox-pill">
+                <input type="checkbox" id="chNaver" />
+                <span class="market-icon">N</span> 네이버 스마트스토어
+              </label>
+              <label class="checkbox-pill">
+                <input type="checkbox" id="chCoupang" />
+                <span class="market-icon">C</span> 쿠팡
+              </label>
+              <label class="checkbox-pill">
+                <input type="checkbox" id="chOwn" />
+                <span class="market-icon">M</span> 자사몰
+              </label>
+            </div>
+            <div class="hint">
+              실제 업로드는 각 마켓의 공식 API를 사용하여 별도 서버에서 처리해야 합니다. 이 화면은 상품 정보 관리용입니다.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>안내</h2>
+              <span>DB에 저장된 후 / 경로 / 에러 안내</span>
+            </div>
+          </div>
+          <div class="hint">
+            <ul style="margin:0;padding-left:18px;">
+              <li>상품 저장 버튼을 누르면 이 컴퓨터에 있는 <code>golf.db</code> 파일에 정보가 저장됩니다.</li>
+              <li>고객용 상품 리스트는 <code>http://127.0.0.1:5000/</code> 에서 확인할 수 있습니다.</li>
+              <li>실제 상용 서비스로 운영하려면 호스팅 서버(클라우드 등)에 이 코드를 배포해야 합니다.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+  function mockFillM4() {
+    document.getElementById("brand").value = "테일러메이드";
+    document.getElementById("model").value = "M4 드라이버";
+    document.getElementById("clubType").value = "드라이버";
+    document.getElementById("condition").value = "B+ · 보통보다 좋음";
+    document.getElementById("loft").value = "9.5";
+    document.getElementById("shaft").value = "FUBUKI S";
+    document.getElementById("flex").value = "S";
+    document.getElementById("title").value =
+      "[B+] 테일러메이드 M4 드라이버 9.5도 FUBUKI S샤프트";
+    document.getElementById("basePrice").value = "250000";
+    document.getElementById("minPrice").value = "180000";
+    document.getElementById("stock").value = "1";
+    document.getElementById("description").value =
+      "테일러메이드 M4 드라이버 B+급 중고입니다. 관용성이 좋고 초중급자에게 추천되는 헤드입니다.";
+    document.getElementById("chNaver").checked = true;
+    document.getElementById("chOwn").checked = true;
+  }
+
+  async function saveProduct() {
+    const data = {
+      brand: document.getElementById("brand").value,
+      model: document.getElementById("model").value,
+      clubType: document.getElementById("clubType").value,
+      condition: document.getElementById("condition").value,
+      loft: document.getElementById("loft").value,
+      shaft: document.getElementById("shaft").value,
+      flex: document.getElementById("flex").value,
+      title: document.getElementById("title").value,
+      basePrice: document.getElementById("basePrice").value,
+      minPrice: document.getElementById("minPrice").value,
+      stock: document.getElementById("stock").value,
+      description: document.getElementById("description").value,
+      channels: {
+        naver: document.getElementById("chNaver").checked,
+        coupang: document.getElementById("chCoupang").checked,
+        own: document.getElementById("chOwn").checked
+      }
+    };
+
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.ok) {
+        alert("상품이 저장되었습니다.\n고객용 페이지에서 확인: /");
+      } else {
+        alert("저장 중 오류가 발생했습니다.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("서버 통신 중 오류가 발생했습니다.");
+    }
+  }
+</script>
+</body>
+</html>
